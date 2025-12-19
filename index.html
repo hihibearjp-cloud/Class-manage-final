@@ -10,26 +10,26 @@
     <meta name="apple-mobile-web-app-title" content="班級小管家">
     <meta name="theme-color" content="#FEF9F2">
     
+    <!-- 預留連結，將由 JavaScript 動態填入 -->
     <link rel="apple-touch-icon" id="ios-icon" href="">
     <link rel="icon" id="fav-icon" href="">
 
     <script>
+        // 這是您指定的圖示 (棕色背景、米色書本) 的 Base64 SVG 編碼
+        const appIconDataRobust = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEyMCIgZmlsbD0iIzVENDAzNyIvPjxwYXRoIGQ9Ik0zNjAgMTYwVjM4MEMzNjAgMzgwIDI5MCAzNTAgMjU2IDM1MEMyMjIgMzUwIDE1MiAzODAgMTUyIDM4MFYxNjBDMTUyIDE2MCAyMjIgMTMwIDI1NiAxMzBDMjkwIDEzMCAzNjAgMTYwIDM2MCAxNjBaIiBmaWxsPSIjRkVGOUYyIi8+PHBhdGggZD0iTTI1NiAxNTBWMzc1IiBzdHJva2U9IiM1RDQwMzYiIHN0cm9rZS13aWR0aD0iMTYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==";
+
         window.onload = function() {
             try {
-                var canvas = document.createElement('canvas');
-                canvas.width = 512; canvas.height = 512;
-                var ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#FFF9C4'; ctx.fillRect(0, 0, 512, 512);
-                ctx.fillStyle = '#5D4037'; ctx.fillRect(56, 56, 400, 300);
-                ctx.fillStyle = '#2E7D32'; ctx.fillRect(76, 76, 360, 260);
-                ctx.fillStyle = '#8D6E63'; ctx.fillRect(130, 340, 252, 172);
-                ctx.font = '200px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                ctx.fillText('👩‍🏫', 256, 260);
-                var iconUrl = canvas.toDataURL('image/png');
+                // 1. 設定 iOS 和 瀏覽器 Icon
                 var iosLink = document.getElementById('ios-icon');
                 var favLink = document.getElementById('fav-icon');
-                if(iosLink) iosLink.href = iconUrl;
-                if(favLink) favLink.href = iconUrl;
+                if(iosLink) iosLink.href = appIconDataRobust;
+                if(favLink) favLink.href = appIconDataRobust;
+
+                // 2. 設定啟動畫面的 Logo
+                var loadingLogo = document.getElementById('loading-logo-img');
+                if(loadingLogo) loadingLogo.src = appIconDataRobust;
+
             } catch(e) { console.log('Icon generation failed'); }
         };
     </script>
@@ -38,9 +38,13 @@
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         body { background-color: #FEF9F2; margin: 0; padding: 0; overscroll-behavior-y: none; font-family: -apple-system, sans-serif; }
         
+        /* 啟動畫面樣式調整 */
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #FEF9F2; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #5D4037; border-top: 5px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Logo 動畫與樣式 */
+        .app-logo { width: 120px; height: 120px; border-radius: 28px; box-shadow: 0 8px 16px rgba(93, 64, 55, 0.2); margin-bottom: 24px; animation: breathe 2s infinite ease-in-out; }
+        @keyframes breathe { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
         #error-log { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; color: red; padding: 20px; z-index: 10000; overflow: auto; font-family: monospace; font-size: 16px; white-space: pre-wrap; }
 
         @media print {
@@ -53,7 +57,7 @@
             .print-content { font-size: 10pt; line-height: 1.3; flex-grow: 1; }
             .print-card:has(.content-overflow) .print-content { font-size: 9pt; line-height: 1.2; }
             .section-header { font-weight: bold; margin-top: 2px; font-size: 9.5pt; text-decoration: underline; }
-            .signature-box { position: absolute; bottom: 5px; right: 10px; font-size: 11pt; font-weight: bold; text-align: right; width: 100%; border-top: 2px solid #000; padding-top: 5px; margin-top: 10px; }
+            .signature-box { position: absolute; bottom: 5px; right: 10px; font-size: 12pt; font-weight: bold; text-align: right; width: 100%; border-top: 2px solid #000; padding-top: 8px; margin-top: 10px; }
         }
     </style>
 
@@ -69,8 +73,10 @@
     <div id="error-log"></div>
     <div id="root">
         <div id="loading-screen">
-            <div class="spinner"></div>
-            <h2 style="color: #5D4037; font-weight: bold;">正在啟動...</h2>
+            <!-- 這裡會顯示您的新 Logo -->
+            <img id="loading-logo-img" class="app-logo" src="" alt="App Logo" />
+            <h2 style="color: #5D4037; font-weight: bold; font-family: sans-serif;">Class Manage</h2>
+            <p style="color: #8D6E63; font-size: 0.9rem; margin-top: 5px;">啟動中...</p>
         </div>
     </div>
 
@@ -566,7 +572,7 @@
             let detailedAttendance = []; 
             let detailedMissing = [];
             let detailedContactBook = [];
-            let detailedHomework = [];    
+            let detailedHomework = [];     
 
             dates.forEach(date => {
               const data = allData[date]; if (!data) return;
@@ -791,7 +797,7 @@
             html += '.card { border: 2px solid #5D4037; padding: 5px; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; page-break-inside: avoid; height: 100%; position: relative; }';
             html += '.msg-content { white-space: pre-wrap; font-size: 9pt; height: 100%; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; }';
             html += '.section-header { font-weight: bold; margin-top: 2px; font-size: 9.5pt; text-decoration: underline; }';
-            html += '.signature-box { position: absolute; bottom: 5px; right: 10px; font-size: 11pt; font-weight: bold; text-align: right; width: 100%; border-top: 2px solid #000; padding-top: 5px; margin-top: 10px; }';
+            html += '.signature-box { position: absolute; bottom: 5px; right: 10px; font-size: 12pt; font-weight: bold; text-align: right; width: 100%; border-top: 2px solid #000; padding-top: 8px; margin-top: 10px; }';
             html += '@media print { body { margin: 0; padding: 0; } }';
             html += '</style></head><body>';
 
@@ -805,7 +811,7 @@
                     msg = msg.replace('📢 注意事項：', '<b><u>📢 注意事項：</u></b>');
                     html += `<div class="card">
                         <div class="msg-content content-overflow">${msg}</div>
-                        <div class="signature-box">家長簽名：</div>
+                        <div class="signature-box"><b>家長簽名：________________</b></div>
                     </div>`;
                 });
                 html += '</div>';
@@ -1278,7 +1284,7 @@
                     loading.style.opacity = '0';
                     setTimeout(() => loading.style.display = 'none', 500);
                 }
-            }, 500);
+            }, 800);
         } catch (err) {
             console.error(err);
             document.getElementById('error-log').style.display = 'block';
